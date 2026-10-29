@@ -1,0 +1,45 @@
+# GitHub Actions orchestrates; Spark/Delta tests run on Databricks.
+# Runner allowlist needs the workspace host (and PyPI only if you add Connect).
+# Maven Central is NOT required.
+
+name: Databricks Spark tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: spark-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  spark-unit-tests:
+    runs-on: ubuntu-latest # or your self-hosted / enterprise runner
+    timeout-minutes: 30
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      # Prefer OIDC — set DATABRICKS_CLIENT_ID to the service principal UUID.
+      DATABRICKS_CLIENT_ID: ${{ secrets.DATABRICKS_CLIENT_ID }}
+      DATABRICKS_AUTH_TYPE: github-oidc
+      # If OIDC is not ready yet, comment out the two lines above and use:
+      # DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Validate bundle
+        run: databricks bundle validate -t ci
+
+      - name: Deploy bundle (ci target)
+        run: databricks bundle deploy -t ci
+
+      # spark_unit_tests is the job KEY in resources/spark_unit_tests.yml — not a file.
+      - name: Run Spark unit tests on Databricks
+        run: databricks bundle run spark_unit_tests -t ci

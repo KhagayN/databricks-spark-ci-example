@@ -1,0 +1,20 @@
+# Job key spark_unit_tests == argument to: databricks bundle run spark_unit_tests
+resources:
+  jobs:
+    spark_unit_tests:
+      name: spark-unit-tests
+      timeout_seconds: 1800
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: pytest
+          notebook_task:
+            notebook_path: ../notebooks/run_unit_tests.py
+            source: WORKSPACE
+          # Serverless environment — Delta is on DBR; no Maven download needed.
+          environment_key: pytest_env
+      environments:
+        - environment_key: pytest_env
+          spec:
+            environment_version: "4"
+            dependencies:
+              - pytest

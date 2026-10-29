@@ -1,0 +1,30 @@
+# Databricks Asset Bundle — CI runs Spark/Delta tests on Databricks (no Maven on the runner).
+#
+# spark_unit_tests below is a JOB KEY (passed to `databricks bundle run spark_unit_tests`).
+# It is not a file. Tests live in tests/; the notebook task invokes pytest.
+
+bundle:
+  name: databricks-spark-ci-example
+
+include:
+  - resources/*.yml
+
+targets:
+  ci:
+    mode: development
+    default: true
+    workspace:
+      # Replace with your workspace host before deploy/run.
+      # GitHub Actions also sets DATABRICKS_HOST for CLI auth.
+      host: https://YOUR-WORKSPACE.cloud.databricks.com
+    variables:
+      catalog: main
+      schema: ci_spark_tests
+
+variables:
+  catalog:
+    description: Catalog used by sample tests (override per target)
+    default: main
+  schema:
+    description: Schema used by sample tests (override per target)
+    default: default
