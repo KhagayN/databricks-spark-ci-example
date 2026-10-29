@@ -14,7 +14,9 @@ Split tests:
 
 Use a **service principal** (GitHub OIDC / workload identity federation preferred over PATs).
 
-We put a minimal example repo together you can copy from: **databricks-spark-ci-example** (workflow + `databricks.yml` + pytest runner notebook).
+We put a minimal example repo together you can copy from:
+https://github.com/KhagayN/databricks-spark-ci-example
+(workflow + `databricks.yml` + pytest runner notebook).
 
 Important: `spark_unit_tests` is the **job key in `databricks.yml`**, not a file. The tests are still `tests/test_*.py`; a small notebook task runs pytest on Databricks.
 

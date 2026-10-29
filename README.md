@@ -1,5 +1,7 @@
 # Databricks Spark CI example (Maven-free)
 
+**Repo:** https://github.com/KhagayN/databricks-spark-ci-example
+
 Example pattern for testing Spark / Delta code written for Databricks when **GitHub runners cannot reach Maven Central**.
 
 ## The problem
